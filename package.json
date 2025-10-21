@@ -1,0 +1,22 @@
+{
+  "name": "photo-app-e2e",
+  "version": "1.0.0",
+  "description": "E2E heuristic tests for Personal Photo Application (NN/g UX compliance)",
+  "scripts": {
+    "start": "next start || vite preview || serve dist",
+    "build": "next build || vite build || echo 'no build step'",
+    "cypress:open": "RUN_UI_CHECKS=true cypress open",
+    "cypress:run": "RUN_UI_CHECKS=true cypress run --spec e2e/heuristics.cy.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/mocha": "^10.0.0",
+    "cypress": "^13.9.0",
+    "typescript": "^5.4.0",
+    "wait-on": "^7.0.1"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
