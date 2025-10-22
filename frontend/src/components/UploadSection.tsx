@@ -1,8 +1,6 @@
 import { useRef, useState } from 'preact/hooks';
 import { usePhotos } from '../hooks/usePhotos';
 
-const USER_ID = import.meta.env.VITE_USER_ID ?? 'demo-user';
-
 export const UploadSection = () => {
   const { refresh } = usePhotos();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -13,14 +11,18 @@ export const UploadSection = () => {
   const upload = async () => {
     const files = inputRef.current?.files;
     if (!files?.length) return;
+    
     const formData = new FormData();
     Array.from(files).forEach((file: File) => formData.append('files', file));
-    formData.append('user_id', USER_ID);
+    
     setLoading(true);
     setMessage(undefined);
     try {
       const res = await fetch('/api/photos/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
         body: formData
       });
       if (!res.ok) throw new Error('Upload failed');
