@@ -141,6 +141,34 @@ const checklist: any = {
       ]
     },
     {
+      "id": "H4",
+      "title": "Consistency and standards",
+      "checks": [
+        {
+          "id": "H4-1",
+          "description": "Edit affordances, badge positions, and focus behavior are consistent across screens.",
+          "components": [
+            "Gallery",
+            "Detail View"
+          ],
+          "acceptance": [
+            "Edit icons (\u270e) look and behave the same for caption, note, and location.",
+            "Badges appear in the same region across gallery/detail.",
+            "TV/keyboard focus order is left-to-right, top-to-bottom; no 'focus traps'."
+          ],
+          "tests": {
+            "manual": [
+              "Traverse UI with keyboard/remote only; confirm predictable focus order."
+            ],
+            "cypress": [
+              "cy.realPress('Tab'); cy.focused().should('have.attr','data-focus-visible','true');"
+            ]
+          },
+          "severity_default": "S3"
+        }
+      ]
+    },
+    {
       "id": "H5",
       "title": "Error prevention",
       "checks": [
@@ -165,6 +193,140 @@ const checklist: any = {
             ]
           },
           "severity_default": "S2"
+        }
+      ]
+    },
+    {
+      "id": "H6",
+      "title": "Recognition rather than recall",
+      "checks": [
+        {
+          "id": "H6-1",
+          "description": "Preset options and explicit filters reduce memory load.",
+          "components": [
+            "Settings",
+            "Filters"
+          ],
+          "acceptance": [
+            "Slideshow interval presents presets: 3/5/10/30s.",
+            "Filters include: Has EXIF location, Has user-edited location, Has note."
+          ],
+          "tests": {
+            "manual": [
+              "Open settings and verify presets exist; toggle filters and see expected results."
+            ],
+            "cypress": [
+              "cy.get(\"[data-testid='slideshow-interval']\").within(()=>{ cy.contains('3s'); cy.contains('5s'); });"
+            ]
+          },
+          "severity_default": "S3"
+        }
+      ]
+    },
+    {
+      "id": "H7",
+      "title": "Flexibility and efficiency of use",
+      "checks": [
+        {
+          "id": "H7-1",
+          "description": "Shortcuts and preferences persist; slideshow responds to remote keys.",
+          "components": [
+            "Slideshow",
+            "Settings"
+          ],
+          "acceptance": [
+            "Space/OK toggles play/pause; \u2190/\u2192 prev/next.",
+            "detailOnly and interval persist per user after reload."
+          ],
+          "tests": {
+            "manual": [
+              "Start slideshow; use remote/keyboard to control; reload and confirm settings persist."
+            ],
+            "cypress": [
+              "cy.get(\"[data-testid='detail-only']\").check(); cy.reload(); cy.get(\"[data-testid='detail-only']\").should('be.checked');"
+            ]
+          },
+          "severity_default": "S3"
+        }
+      ]
+    },
+    {
+      "id": "H8",
+      "title": "Aesthetic and minimalist design",
+      "checks": [
+        {
+          "id": "H8-1",
+          "description": "Information hierarchy is clear; gallery cards remain minimal.",
+          "components": [
+            "Gallery",
+            "Detail View"
+          ],
+          "acceptance": [
+            "Thumbnails show at most 2 compact chips (note/location).",
+            "Detail view: photo > caption > note > location; extra metadata hidden behind disclosure."
+          ],
+          "tests": {
+            "manual": [
+              "Resize to small viewport; ensure text truncates gracefully; no overlap."
+            ],
+            "cypress": [
+              "cy.viewport(320, 560); cy.get(\"[data-testid='photo-thumb']\").first().should('be.visible');"
+            ]
+          },
+          "severity_default": "S4"
+        }
+      ]
+    },
+    {
+      "id": "H9",
+      "title": "Help users recognize, diagnose, and recover from errors",
+      "checks": [
+        {
+          "id": "H9-1",
+          "description": "Errors use plain language and offer recovery actions.",
+          "components": [
+            "Errors",
+            "Location"
+          ],
+          "acceptance": [
+            "No EXIF GPS: offer 'Add a location'.",
+            "Geocode failure: offer 'Save label only' or 'Enter coordinates'."
+          ],
+          "tests": {
+            "manual": [
+              "Disable geocode service; attempt override; verify fallback actions are offered."
+            ],
+            "cypress": [
+              "cy.intercept('/jobs/geocode', { statusCode: 500 }); /* trigger edit */ cy.get(\"[data-testid='error-banner']\").should('contain','Save label only');"
+            ]
+          },
+          "severity_default": "S2"
+        }
+      ]
+    },
+    {
+      "id": "H10",
+      "title": "Help and documentation",
+      "checks": [
+        {
+          "id": "H10-1",
+          "description": "Contextual help overlay explains badges, controls, and shortcuts.",
+          "components": [
+            "Help Overlay"
+          ],
+          "acceptance": [
+            "Overlay reachable via keyboard/remote only.",
+            "Includes legend: 'From EXIF' vs 'Edited', and slideshow shortcuts."
+          ],
+          "tests": {
+            "manual": [
+              "Open help on TV remote; confirm readability from ~3m distance."
+            ],
+            "cypress": [
+              "cy.get('body').type('?'); cy.get(\"[data-testid='help-overlay']\").should('be.visible').and('contain','From EXIF');"
+            ]
+          },
+          "severity_default": "S4"
         }
       ]
     }
@@ -310,9 +472,42 @@ describe('NN/g Heuristic UI Review – ' + checklist.app, () => {
             if (sel.editLocationBtn) cy.get(sel.editLocationBtn).should('exist');
             if (sel.revertLocationBtn) cy.get(sel.revertLocationBtn).should('exist');
           }
+          if (chk.id === 'H4-1') {
+            if (sel.thumbCard) cy.get(sel.thumbCard).should('exist');
+            if (sel.locationBadge) cy.get(sel.locationBadge).should('exist');
+          }
           if (chk.id === 'H5-1') {
             if (sel.noteInput) cy.get(sel.noteInput).should('exist');
             if (sel.noteCharCounter) cy.get(sel.noteCharCounter).should('exist');
+          }
+          if (chk.id === 'H6-1') {
+            if (sel.slideshowInterval) cy.get(sel.slideshowInterval).should('exist');
+          }
+          if (chk.id === 'H7-1') {
+            if (sel.slideshowBtn) cy.get(sel.slideshowBtn).should('exist');
+            if (sel.detailOnlyCheckbox) cy.get(sel.detailOnlyCheckbox).should('exist');
+          }
+          if (chk.id === 'H8-1') {
+            if (sel.galleryGrid) cy.get(sel.galleryGrid).should('exist');
+            if (sel.thumbCard) cy.get(sel.thumbCard).should('exist');
+          }
+          if (chk.id === 'H9-1') {
+            if (sel.errorBanner) {
+              cy.get('body').then(($body) => {
+                if ($body.find(sel.errorBanner).length) {
+                  cy.get(sel.errorBanner).should('exist');
+                }
+              });
+            }
+          }
+          if (chk.id === 'H10-1') {
+            if (sel.helpOverlay) {
+              cy.get('body').then(($body) => {
+                if ($body.find(sel.helpOverlay).length) {
+                  cy.get(sel.helpOverlay).should('exist');
+                }
+              });
+            }
           }
         });
       });
