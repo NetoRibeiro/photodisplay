@@ -87,3 +87,51 @@ For convenience, the repository includes `scripts/export_patch.sh`, which wraps
 Run the script from anywhere inside the repository. The generated patch can be
 downloaded and applied on a machine that has access to your Git remote, after
 which a regular `git push` will publish the commits.
+
+# Deployment: Google Cloud & Firebase Best Practices
+
+## Backend (FastAPI on Cloud Run)
+1. Build and push Docker image:
+   ```bash
+   gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/photodisplay-backend:TAG
+   ```
+2. Deploy to Cloud Run:
+   ```bash
+   gcloud run deploy photodisplay \
+     --image gcr.io/YOUR_PROJECT_ID/photodisplay-backend:TAG \
+     --region=REGION \
+     --platform=managed \
+     --allow-unauthenticated \
+     --set-secrets=SECRET_KEY=projects/YOUR_PROJECT_ID/secrets/SECRET_KEY:latest
+   ```
+   Replace secrets as needed. Use Google Secret Manager for sensitive config.
+
+## Frontend (Firebase Hosting)
+1. Build your frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   ```
+2. Deploy to Firebase Hosting:
+   ```bash
+   firebase deploy --only hosting
+   ```
+3. Ensure `firebase.json` and `.firebaserc` are present.
+
+## Health Checks
+- Backend provides `/healthz` endpoint for Cloud Run and apphosting.yaml.
+
+## Configuration & Secrets
+- Store secrets in Google Secret Manager – never hardcode in source.
+
+## Logs
+- Use Google Cloud Console > Logging to monitor backend logs.
+
+## IAM
+- Use least-privilege roles for deployment, Cloud Run, and Firebase Hosting accounts.
+
+## Best Practices
+- Always use HTTPS endpoints.
+- Minimize Docker image size (use slim base images, multi-stage builds if needed).
+- Set up automated deploys with Cloud Build or GitHub Actions if possible.
