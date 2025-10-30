@@ -1,0 +1,18 @@
+run:
+  container:
+    image: build-2025-10-30-001
+    # Uncomment and set environment variables here if needed
+    # env:
+    #   - key: value
+
+resources:
+  cpu: 1
+  memory_gb: 1
+
+scaling:
+  minInstanceCount: 0
+  maxInstanceCount: 3
+
+healthChecks:
+  - path: /healthz
+    timeout: 5s
