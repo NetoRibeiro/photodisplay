@@ -16,6 +16,7 @@ export const PhotoGrid = ({ photos }: { photos: PhotoMetadata[] }) => (
     {photos.map((photo) => {
       const badgeClass = statusStyles[photo.status] ?? 'bg-gray-600/60 text-gray-200';
       return (
+        // @ts-ignore
         <Link
           key={photo.id}
           href={`/photos/${photo.id}`}

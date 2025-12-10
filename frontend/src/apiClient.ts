@@ -17,7 +17,7 @@ function setAuthToken(token: string | null) {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(init?.headers ?? {})
+    ...(init?.headers as Record<string, string> ?? {})
   };
 
   // Add authorization header if token exists
@@ -27,8 +27,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: 'include',
-    headers,
-    ...init
+    ...init,
+    headers
   });
 
   if (!res.ok) {

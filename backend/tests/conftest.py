@@ -11,5 +11,5 @@ def client():
     if len(settings.jwt_secret) < 32:
         settings.jwt_secret = "test_secret_key_must_be_at_least_32_chars_long"
     
-    with TestClient(app) as c:
+    with TestClient(app, base_url="http://localhost") as c:
         yield c

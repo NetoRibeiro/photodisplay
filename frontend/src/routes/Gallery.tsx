@@ -22,6 +22,7 @@ const Gallery = (_props: RouteComponentProps) => {
           <UploadSection />
         </div>
         <div class="flex items-center justify-end gap-3">
+          {/* @ts-ignore */}
           <Link
             href="/slideshow"
             class="rounded bg-gray-800 px-4 py-2 text-sm font-semibold text-accent"
