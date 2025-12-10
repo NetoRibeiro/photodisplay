@@ -21,7 +21,8 @@ class GeocodeWorker:
       'lon': lon
     }
     async with httpx.AsyncClient() as client:
-      response = await client.get('https://nominatim.openstreetmap.org/reverse', params=params, timeout=10.0)
+      headers = {'User-Agent': 'PhotoDisplay/1.0'}
+      response = await client.get('https://nominatim.openstreetmap.org/reverse', params=params, headers=headers, timeout=10.0)
       if response.status_code != 200:
         return None
       data = response.json()

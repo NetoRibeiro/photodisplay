@@ -36,8 +36,8 @@ class Settings(BaseSettings):
   
   @validator('jwt_secret')
   def validate_jwt_secret(cls, v):
-    if v == 'change-me' or len(v) < 32:
-      raise ValueError('JWT secret must be at least 32 characters and not the default value')
+    if len(v) < 32:
+      raise ValueError('JWT secret must be at least 32 characters')
     return v
 
 
